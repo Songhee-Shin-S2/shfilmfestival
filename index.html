@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI 인권 단편영화제</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap">
+<style>
+:root{--bg:#fffbe6;--card:#ffffff;--ink:#3b4636;--mute:#8a9382;--line:#ffe58a;--acc:#1e90d8;--accd:#1670a8;--accbg:#e6f5ff;--field:#fffef7;--ok:#1f8a4c;--bad:#d6453d;--shadow:#ffe08a}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#22261a;--card:#2f3422;--ink:#fffbe0;--mute:#b9bfa6;--line:#5b5a22;--acc:#5cc3ff;--accd:#2f8fc4;--accbg:#223540;--field:#262a1b;--ok:#7be0a0;--bad:#ff9a92;--shadow:#161810}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 "Gowun Dodum","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+background-image:radial-gradient(circle at 12px 12px,var(--line) 2px,transparent 2.5px);background-size:34px 34px}
+.wrap{max-width:760px;margin:0 auto;padding:18px 14px 60px}
+h1,h2,.q,.btn,.big,.tabs button,.film b,.budget{font-family:"Jua","Gowun Dodum","Noto Sans KR",sans-serif;font-weight:400}
+h1{font-size:28px;margin:0;color:var(--acc);text-shadow:2px 2px 0 var(--shadow)}
+h2{font-size:18px;margin:18px 0 6px}
+.sub{color:var(--mute);margin:2px 0 12px}
+.card{background:var(--card);border:3px solid var(--line);border-radius:24px;padding:18px;margin:14px 0;box-shadow:0 5px 0 var(--shadow)}
+button{font:inherit;cursor:pointer}
+.btn{background:var(--acc);color:#fff;border:0;border-radius:999px;padding:12px 28px;font-size:18px;box-shadow:0 4px 0 var(--accd)}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--accd)}
+.btn:disabled{opacity:.5}
+.ghost{--c:var(--acc);background:var(--card);color:var(--ink);border:2.5px solid var(--c);border-radius:999px;padding:7px 16px}
+.ghost.on{background:var(--c);color:#26331f;font-weight:700}
+input[type=text],input[type=password],input[type=number],select,textarea{width:100%;font:inherit;color:var(--ink);background:var(--field);border:2.5px solid var(--line);border-radius:16px;padding:10px 13px;outline:0}
+input:focus,select:focus,textarea:focus{border-color:var(--acc)}
+textarea{resize:vertical}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tabs,.cls{display:flex;gap:8px;flex-wrap:wrap}
+.q{margin:18px 0 6px;font-size:17px}
+.opt{display:flex;gap:9px;align-items:center;padding:6px 12px;margin:4px 0;border-radius:14px;background:var(--field)}
+.opt input{width:19px;height:19px;accent-color:#1e90d8}
+.bar{height:16px;background:var(--accbg);border-radius:99px;overflow:hidden;border:2px solid var(--line)}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,#ffd43b,#8fd14f);border-radius:99px;transition:width .25s}
+.budget{display:flex;justify-content:space-between;font-size:18px;margin-bottom:8px}
+.msg{padding:12px 14px;border-radius:18px;margin:10px 0}
+.msg.err{background:#ffe9e6;color:var(--bad)}.msg.ok{background:#e3f7e2;color:var(--ok)}
+.note{font-size:13.5px;color:var(--mute)}
+.big{font-size:40px;color:var(--acc);margin:2px 0}
+.film{display:flex;justify-content:space-between;align-items:center;width:100%;text-align:left;background:var(--card);border:3px solid var(--c);border-radius:20px;padding:12px 16px;margin:10px 0;color:var(--ink);box-shadow:0 4px 0 var(--c)}
+.film.sel{background:var(--accbg)}
+.film b{font-size:19px}.film span{font-family:"Jua",sans-serif;color:var(--acc);font-size:18px}
+.cm{border-top:2px dashed var(--line);padding:10px 0;font-size:14.5px}
+.pill{display:inline-block;background:var(--accbg);color:var(--accd);border-radius:99px;padding:2px 12px;font-size:14px;margin:3px 4px 3px 0}
+@media(prefers-color-scheme:dark){.pill{color:var(--acc)}}
+.hide{display:none}
+</style></head>
+<body><div class="wrap">
+<h1>🎬 AI 인권 단편영화제 ✨</h1>
+<p class="sub" id="sub">관객·투자자 카드</p>
+<div id="status"></div>
+<div id="stu"></div>
+<div id="tch" class="hide"></div>
+</div>
+<script>
+/* ★ Apps Script 배포 후 나오는 웹 앱 URL을 여기에 붙여 넣으세요 */
+const API_URL="https://script.google.com/macros/s/AKfycbyPaj0uBIPSmjOjgUEg_WeTwQXqBD5dtrlYVuTIK1n1PgRJVgOBd0clGjnRvy9-N7gqIw/exec";
+
+const BUDGET=100; // 만원 단위 (100만원)
+const G=[1,2,3,4,5,6,7], C=[1,2,3,4,5,6,7];
+const COL=["#ffd43b","#6fcdf7","#a6dc5a","#ffb44d","#58b3f5","#7fdc9e","#f5e663"];
+const WANT=["꼭 보고 싶다","보고 싶다","잘 모르겠다","별로 보고 싶지 않다"];
+const INV=[["yes","💰 투자한다!"],["maybe","🤔 고민된다"],["no","💸 투자하지 않겠다"]];
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const won=n=>(n*10000).toLocaleString("ko-KR")+"원";
+const $=id=>document.getElementById(id);
+let titlesS={},titlesT={},st={cls:"",name:"",group:"",cards:{}},cur=null,subs=[],sel=null,revealed={},tcls="1",tPw="",poll=null,busy=false;
+
+async function api(body){
+  if(!/^https:\/\//.test(API_URL))throw new Error("API_URL이 설정되지 않았어요.");
+  const r=await fetch(API_URL,{method:"POST",body:JSON.stringify(body)}); // text/plain 전송 (CORS 사전요청 없음)
+  return r.json();
+}
+function status(t,k){ $("status").innerHTML=t?`<div class="msg ${k||"err"}">${esc(t)}</div>`:""; }
+const lab=(T,g)=>g+"모둠"+(T[g]?" · "+T[g]:"");
+const card=g=>st.cards[g]||(st.cards[g]={story:"",topic:"",impress:"",want:"",invest:"",reason:"",amount:0});
+const used=()=>Object.keys(st.cards).reduce((s,g)=>String(g)===String(st.group)?s:s+(+st.cards[g].amount||0),0);
+
+/* ---------- 학생 화면 ---------- */
+async function loadTitlesS(cls){
+  try{const r=await (await fetch(API_URL+"?action=titles&cls="+cls)).json();titlesS=r.titles||{};}catch(e){titlesS={};}
+  document.querySelectorAll("#stu .tabs button").forEach(b=>b.textContent=lab(titlesS,+b.dataset.g));
+  const ct=$("ctitle"); if(ct&&cur)ct.textContent="🎞️ "+lab(titlesS,cur);
+}
+function renderStu(){
+  const others=G.filter(g=>String(g)!==String(st.group));
+  if(cur===null||String(cur)===String(st.group)) cur=others[0];
+  let h=`<div class="card"><div class="q" style="margin-top:0">🏫 우리 반을 골라요</div>
+   <div class="cls">${C.map(c=>`<button class="ghost ${String(st.cls)===String(c)?"on":""}" data-c="${c}" style="--c:${COL[c-1]}">${c}반</button>`).join("")}</div></div>`;
+  if(!st.cls){ $("stu").innerHTML=h; bindTop(); return; }
+  h+=`<div class="card"><div class="row">
+   <div><label class="q" style="margin-top:0">🙋 내 이름</label><input type="text" id="nm" value="${esc(st.name)}" placeholder="이름"></div>
+   <div><label class="q" style="margin-top:0">🤝 우리 모둠</label><select id="gp"><option value="">선택</option>${G.map(g=>`<option value="${g}" ${String(st.group)===String(g)?"selected":""}>${g}모둠</option>`).join("")}</select></div></div></div>`;
+  if(!st.group){ $("stu").innerHTML=h+`<p class="note">우리 모둠을 고르면 평가할 영화가 나와요 🎞️ (우리 모둠 영화에는 투자할 수 없어요)</p>`; bindTop(); return; }
+  h+=`<div class="card"><div class="budget"><span>💰 남은 투자금</span><span id="rem"></span></div><div class="bar"><i id="barfill"></i></div>
+   <p class="note" style="margin:8px 0 0">한 명당 ${won(BUDGET)}을 다른 모둠 영화에 나눠서 투자해요.</p></div>
+   <div class="tabs">${others.map(g=>`<button class="ghost ${g===cur?"on":""}" data-g="${g}" style="--c:${COL[g-1]}">${esc(lab(titlesS,g))}</button>`).join("")}</div>
+   <div class="card" id="cardbox" style="border-color:${COL[cur-1]};box-shadow:0 5px 0 ${COL[cur-1]}"></div>
+   <button class="btn" id="submit">🚀 제출하기</button>
+   <p class="note">※ 영화의 제작 기술보다 이야기의 의미, 인권에 대한 생각, 실제 영화로 만들었을 때의 가능성을 중심으로 판단해 봅시다. 같은 반·같은 이름으로 다시 제출하면 이전 내용이 덮어써져요.</p>`;
+  $("stu").innerHTML=h; bindTop();
+  document.querySelectorAll("#stu .tabs button").forEach(b=>b.onclick=()=>{cur=+b.dataset.g;renderStu();});
+  $("submit").onclick=submit;
+  renderCard(); updBudget();
+}
+function bindTop(){
+  document.querySelectorAll("#stu .cls button").forEach(b=>b.onclick=()=>{st.cls=b.dataset.c;loadTitlesS(st.cls);renderStu();});
+  const nm=$("nm"),gp=$("gp"); if(!nm)return;
+  nm.oninput=e=>st.name=e.target.value;
+  gp.onchange=e=>{st.group=e.target.value;if(st.group)delete st.cards[st.group];cur=null;renderStu();};
+}
+function updBudget(){
+  const r=BUDGET-used(); const el=$("rem"); if(!el)return;
+  el.textContent=won(r); el.style.color=r<0?"var(--bad)":"var(--ink)";
+  $("barfill").style.width=Math.max(0,Math.min(100,used()/BUDGET*100))+"%";
+}
+function renderCard(){
+  const c=card(cur), no=c.invest==="no";
+  $("cardbox").innerHTML=`<h2 style="margin-top:0" id="ctitle">🎞️ ${esc(lab(titlesS,cur))}</h2>
+  <div class="q">1️⃣ 이 영화는 어떤 이야기인가요? <span class="note">(한 문장)</span></div><textarea rows="2" data-k="story">${esc(c.story)}</textarea>
+  <div class="q">2️⃣ 이 영화가 다루는 인권 주제는 무엇인가요?</div><textarea rows="2" data-k="topic">${esc(c.topic)}</textarea>
+  <div class="q">3️⃣ 이 영화에서 가장 인상 깊었던 점은?</div><textarea rows="3" data-k="impress">${esc(c.impress)}</textarea>
+  <div class="q">4️⃣ 이 영화가 실제로 만들어진다면 보고 싶은가요?</div>
+  ${WANT.map(w=>`<label class="opt"><input type="radio" name="want" value="${w}" ${c.want===w?"checked":""}>${w}</label>`).join("")}
+  <div class="q">5️⃣ 이 영화에 투자하고 싶나요?</div>
+  ${INV.map(([v,t])=>`<label class="opt"><input type="radio" name="inv" value="${v}" ${c.invest===v?"checked":""}>${t}</label>`).join("")}
+  <div class="q" style="margin-top:10px">그 이유</div><textarea rows="2" data-k="reason">${esc(c.reason)}</textarea>
+  <div class="q">6️⃣ 최종 투자 점수</div>
+  <div style="display:flex;gap:8px;align-items:center"><input type="number" id="amt" min="0" max="${BUDGET}" step="1" value="${c.amount||0}" ${no?"disabled":""} style="max-width:130px"> <b>만원</b> <span class="note" id="amtw">= ${won(+c.amount||0)}</span></div>`;
+  document.querySelectorAll("#cardbox textarea").forEach(t=>t.oninput=e=>c[t.dataset.k]=e.target.value);
+  document.querySelectorAll('input[name=want]').forEach(r=>r.onchange=()=>c.want=r.value);
+  document.querySelectorAll('input[name=inv]').forEach(r=>r.onchange=()=>{c.invest=r.value;if(r.value==="no"){c.amount=0;}renderCard();updBudget();});
+  $("amt").oninput=e=>{let v=Math.max(0,Math.floor(+e.target.value||0));c.amount=v;$("amtw").textContent="= "+won(v);updBudget();};
+}
+async function submit(){
+  const bad=m=>{status(m,"err");window.scrollTo({top:0,behavior:"smooth"});};
+  if(busy)return;
+  if(!st.name.trim())return bad("이름을 입력해 주세요.");
+  const others=G.filter(g=>String(g)!==String(st.group));
+  for(const g of others){const c=card(g);
+    if(!c.story.trim()||!c.topic.trim()||!c.impress.trim()||!c.want||!c.invest)return bad(lab(titlesS,g)+" 카드의 1~5번을 모두 채워 주세요.");}
+  if(used()>BUDGET)return bad("투자금이 "+won(used()-BUDGET)+" 초과됐어요. 금액을 줄여 주세요.");
+  const cards={};others.forEach(g=>cards[g]=card(g));
+  busy=true;$("submit").disabled=true;$("submit").textContent="보내는 중...";
+  try{
+    const r=await api({action:"submit",cls:+st.cls,name:st.name.trim(),group:+st.group,cards});
+    if(!r.ok)throw new Error(r.error||"저장 실패");
+    status("🎉 제출 완료! 총 "+won(r.total)+"을 투자했어요.","ok");window.scrollTo({top:0,behavior:"smooth"});
+  }catch(e){bad("제출에 실패했어요: "+(e&&e.message||e)+" (다시 눌러 주세요)");}
+  busy=false;$("submit").disabled=false;$("submit").textContent="🚀 제출하기";
+}
+
+/* ---------- 교사 화면: 주소 끝에 #teacher 를 붙이고 비밀번호를 입력해야 열려요 ---------- */
+function showMode(){
+  const t=location.hash==="#teacher";
+  $("stu").classList.toggle("hide",t);$("tch").classList.toggle("hide",!t);
+  $("sub").textContent=t?"교사 화면":"관객·투자자 카드";
+  if(poll){clearInterval(poll);poll=null;}
+  if(t){status("");tPw?loadT():loginT();}
+}
+function loginT(msg){
+  $("tch").innerHTML=`<div class="card"><div class="q" style="margin-top:0">🔒 교사 비밀번호</div>
+   <input type="password" id="pw" placeholder="비밀번호"><p class="note" id="pwmsg" style="color:var(--bad)">${esc(msg||"")}</p>
+   <button class="btn" id="pwok">열기</button></div>`;
+  const go=()=>{tPw=$("pw").value;loadT();};
+  $("pwok").onclick=go;$("pw").onkeydown=e=>{if(e.key==="Enter")go();};
+}
+async function loadT(){
+  try{
+    const r=await api({action:"results",pw:tPw,cls:tcls});
+    if(!r.ok){tPw="";return loginT(r.error);}
+    subs=r.subs||[];titlesT=r.titles||{};
+    const typing=document.activeElement&&document.activeElement.dataset&&document.activeElement.dataset.t;
+    if(!typing)renderTch();
+    if(!poll)poll=setInterval(loadT,20000);
+  }catch(e){loginT("연결 오류: "+(e&&e.message||e));}
+}
+function agg(g){
+  let sum=0,n=0,w={},iv={},list=[];
+  subs.forEach(s=>{const c=s.cards&&s.cards[g];if(!c)return;
+    const a=+c.amount||0;sum+=a;if(a>0)n++;
+    w[c.want]=(w[c.want]||0)+1;iv[c.invest]=(iv[c.invest]||0)+1;list.push({name:s.name,group:s.group,c});});
+  return{sum,n,w,iv,list,total:list.length};
+}
+function renderTch(){
+  const t=$("tch");
+  let h=`<div class="card"><div class="q" style="margin-top:0">🏫 반 선택</div>
+   <div class="cls">${C.map(c=>`<button class="ghost ${String(tcls)===String(c)?"on":""}" data-c="${c}" style="--c:${COL[c-1]}">${c}반</button>`).join("")}</div>
+   <p class="note" style="margin:10px 0 0">${tcls}반 제출 <b>${subs.length}명</b> · 20초마다 자동으로 새로고침돼요</p>
+   <div style="margin-top:8px"><button class="ghost" id="revAll">🎁 전체 공개</button> <button class="ghost" id="hideAll">🙈 모두 숨기기</button> <button class="ghost" id="refresh">🔄 새로고침</button></div></div>
+   <p class="note">영화 제목을 누르면 받은 투자금이 나타나요 ✨</p>`;
+  G.forEach(g=>{const a=agg(g);
+    h+=`<button class="film ${sel===g?"sel":""}" data-g="${g}" style="--c:${COL[g-1]}"><b>${esc(lab(titlesT,g))}</b><span>${revealed[g]?won(a.sum):"▶ 공개"}</span></button>`;
+    if(sel===g&&revealed[g]){
+      h+=`<div class="card"><div class="note">${tcls}반 ${g}모둠 영화가 받은 투자금</div><div class="big">${won(a.sum)}</div>
+      <div class="note">투자한 학생 ${a.n}명 / 평가한 학생 ${a.total}명${a.n?" · 평균 "+won(Math.round(a.sum/a.n*10)/10):""}</div>
+      <h2>보고 싶은가요?</h2>${WANT.map(x=>`<span class="pill">${x} ${a.w[x]||0}</span>`).join("")}
+      <h2>투자 의사</h2>${INV.map(([v,x])=>`<span class="pill">${x} ${a.iv[v]||0}</span>`).join("")}
+      <h2>학생 의견</h2>${a.list.map(o=>`<div class="cm"><b>${esc(o.name)}</b> <span class="note">(${o.group}모둠) · ${won(+o.c.amount||0)}</span><br>
+       📖 ${esc(o.c.story)}<br>⚖️ ${esc(o.c.topic)}<br>✨ ${esc(o.c.impress)}${o.c.reason?`<br>💬 ${esc(o.c.reason)}`:""}</div>`).join("")||'<p class="note">아직 의견이 없어요.</p>'}</div>`;
+    }
+  });
+  h+=`<div class="card"><h2 style="margin-top:0">✏️ ${tcls}반 영화 제목 설정</h2>${G.map(g=>`<div class="opt"><b style="width:56px">${g}모둠</b><input type="text" data-t="${g}" value="${esc(titlesT[g]||"")}" placeholder="영화 제목"></div>`).join("")}
+   <button class="btn" id="saveT" style="margin-top:10px">💾 제목 저장</button></div>`;
+  t.innerHTML=h;
+  t.querySelectorAll(".cls button").forEach(b=>b.onclick=()=>{tcls=b.dataset.c;sel=null;revealed={};loadT();});
+  t.querySelectorAll(".film").forEach(b=>b.onclick=()=>{const g=+b.dataset.g;if(sel===g&&revealed[g]){revealed[g]=false;}else{sel=g;revealed[g]=true;}renderTch();});
+  $("revAll").onclick=()=>{G.forEach(g=>revealed[g]=true);renderTch();};
+  $("hideAll").onclick=()=>{revealed={};sel=null;renderTch();};
+  $("refresh").onclick=loadT;
+  $("saveT").onclick=async()=>{const o={};t.querySelectorAll("[data-t]").forEach(i=>o[i.dataset.t]=i.value.trim());
+    try{const r=await api({action:"setTitles",pw:tPw,cls:tcls,titles:o});if(!r.ok)throw new Error(r.error);titlesT=o;status("제목을 저장했어요 💾","ok");renderTch();}catch(e){status("저장 실패: "+(e&&e.message||e));}};
+}
+window.addEventListener("hashchange",showMode);
+renderStu();showMode();
+</script></body></html>
